@@ -92,3 +92,37 @@ def read_movies_by_genre_year(genre:str="Sci-Fi", year: int=2010):
     if movies_dic:
         return movies_dic
     return {"msg":"No matched movies found"}
+
+"""
+Senario 4: User wants to access an endpoint that uses both path and query parameters.
+Suppose we have lots of favorite books stored per each user, now uers wnat to see just a sepcific book from his favorite list.
+"""
+users_fav_books = {
+    1: {1: "1984", 2: "To Kill a Mockingbird", 3: "The Great Gatsby",4:"Gulliver's Travels",5:"Madame Bovary"},
+    2: {1: "Moby", 2: "War and Peace", 3: "Hamlet",4:"The Odyssey",5:"Ulysses"},
+    3: {1: "The Catcher in the Rye", 2: "Brave New World", 3: "The Hobbit",4:"Fahrenheit 451",5:"Jane Eyre"},
+}
+
+@app.get("/favorite_books/{user_id}")
+def read_some_of_fav_books(user_id:int=1,maximum_number:int=5)->dict:
+    if not user_id in users_fav_books.keys():
+        return {"msg":"Sorry, your user id is not in our list"}
+    
+    user_books = list(users_fav_books[user_id].values())[:maximum_number]
+    return {"Your favorite books are: ":user_books}
+    
+
+"""
+Senario 5: Suppose in scenario 4, user forgets to write the maximum number and we don't want to show defulat value to him/her.
+Gaol: Learn Optional module.
+"""
+from typing import Optional
+@app.get("/new_favorite_books/{user_id}")
+def read_some_of_fav_books(user_id:int,maximum_number:Optional[int]=None)->dict:
+    if maximum_number is None:
+        return {"msg": "You didn't enter any maximum_number. We got None for it."}
+    if user_id not in users_fav_books.keys():
+        return {"msg": "Sorry, your user id is not in our list."}
+        
+    user_books = list(users_fav_books[user_id].values())[:maximum_number]
+    return {"Your favorite books are: ": user_books}
