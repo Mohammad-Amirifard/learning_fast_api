@@ -49,3 +49,46 @@ def read_user(user_id:int)-> dict:
                 }
     
     
+"""
+Senario 3: User wants to access an endpoint with query parameters to filter data.
+Here, suppopse we have an endpoint shows all films, but using query parameters, user can filter films by genre and year.
+Goal: Learning the query parameters.
+"""
+
+
+movies_db = {
+    1: {"title": "Inception", "genre": "Sci-Fi", "year": 2010},
+    2: {"title": "The Dark Knight", "genre": "Action", "year": 2008},
+    3: {"title": "Interstellar", "genre": "Sci-Fi", "year": 2014},
+    4: {"title": "Pulp Fiction", "genre": "Crime", "year": 1994},
+
+}
+
+# Let's allow user to get all movies.
+@app.get("/movies/")
+def read_all_moives()->dict:
+    return movies_db
+
+#Let's see movies just by an specific genre
+@app.get('/movies/filter1')
+def read_moives_by_genre(genre: str="Sci-Fi"):
+    movies_by_genre = {}
+    for id, dic in movies_db.items():
+        if dic.get("genre") == genre:
+            movies_by_genre[id] = dic
+    
+    if movies_by_genre:
+        return movies_by_genre
+    return {"msg":"No matched movies found"}
+
+#Let's see movies just by an specific genre and specified year
+@app.get('/movies/filter2')
+def read_movies_by_genre_year(genre:str="Sci-Fi", year: int=2010):
+    movies_dic = {}
+    for id, dic in movies_db.items():
+        if dic['genre']==genre and dic["year"]==year:
+            movies_dic[id] = dic
+    
+    if movies_dic:
+        return movies_dic
+    return {"msg":"No matched movies found"}
