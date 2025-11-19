@@ -1,0 +1,71 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+wheels/
+
+# Virtual environments / PEP 582
+venv/
+ENV/
+env/
+.venv/
+env.bak/
+venv.bak/
+__pypackages__/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Testing, coverage and caches
+htmlcov/
+.tox/
+.nox/
+.pytest_cache/
+.coverage
+.coverage.*
+.cache
+.hypothesis/
+
+# FastAPI / Python environment files and secrets
+.env
+.env.*
+secrets.json
+
+# Databases
+*.sqlite3
+*.db
+*.db-journal
+
+# IDEs and editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs and temporary files
+*.log
+tmp/
+temp/
+*.tmp
+
+# Node (if frontend is present)
+node_modules/
+
+# Misc
+*.bak
+*.swp
