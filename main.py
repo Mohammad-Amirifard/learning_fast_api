@@ -126,3 +126,31 @@ def read_some_of_fav_books(user_id:int,maximum_number:Optional[int]=None)->dict:
         
     user_books = list(users_fav_books[user_id].values())[:maximum_number]
     return {"Your favorite books are: ": user_books}
+
+"""
+Scenario 6: User watns to send data to the server using POST method.
+Here, we need first to check the structure of the data sended by user by pydantic model.
+Suppose user wants to add a new movie to his/her list.
+"""
+from pydantic import BaseModel
+
+# First we need to tell what sheme the data sent by user must have
+class Movie_structure(BaseModel):
+    title : str # It says the title given by user must be str
+    genre : str
+    year : int
+
+
+@app.post("/add_fav_books")
+def add_fav_books(movie_detail:Movie_structure): # Here the input of user is called movie_detail which must pay attention to calss Movie_Structure for checing inout format
+    
+    # Now we can add this movie to the movies_db
+    # Compute the next numeric id in a safe way (handle empty DB)
+    if movies_db:
+        new_id = max(movies_db.keys()) + 1
+    else:
+        new_id = 1
+
+    # Store the Pydantic model as a plain dict so responses are JSON-serializable
+    movies_db[new_id] = movie_detail.dict()
+    return {'State': "Successful", 'Movies': movies_db}
