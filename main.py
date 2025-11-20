@@ -198,4 +198,14 @@ def update_movie(movie_id:int, movie_detail:Movie_structure):
     
     movies_db[movie_id] = movie_detail.dict()
     return {'State':"Successful", 'Updated Movie': movies_db[movie_id]}
+
+"""
+Scenario 10: Delete an existing movie using DELETE method.
+"""
+@app.delete("/delete_movie/{movie_id}")
+def delete_movie(movie_id:int):
+    if movie_id not in movies_db:
+        return {"msg":"Movie id not found."}
     
+    deleted_movie = movies_db.pop(movie_id)
+    return {'State':"Successful", 'Deleted Movie': deleted_movie}
