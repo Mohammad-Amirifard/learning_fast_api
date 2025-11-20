@@ -187,3 +187,15 @@ def add_fav_books(movie_detail:Movie_structure): # Here the input of user is cal
     # Store the Pydantic model as a plain dict so responses are JSON-serializable
     movies_db[new_id] = movie_detail.dict()
     return {'State': "Successful", 'Movies': movies_db}
+
+"""
+Scenario 9: Update an existing movie using PUT method.
+"""
+@app.put("/update_movie/{movie_id}")
+def update_movie(movie_id:int, movie_detail:Movie_structure):
+    if movie_id not in movies_db:
+        return {"msg":"Movie id not found."}
+    
+    movies_db[movie_id] = movie_detail.dict()
+    return {'State':"Successful", 'Updated Movie': movies_db[movie_id]}
+    
