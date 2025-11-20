@@ -154,3 +154,14 @@ def add_fav_books(movie_detail:Movie_structure): # Here the input of user is cal
     # Store the Pydantic model as a plain dict so responses are JSON-serializable
     movies_db[new_id] = movie_detail.dict()
     return {'State': "Successful", 'Movies': movies_db}
+
+"""
+Scenario 7: User watns to see all movies, but these data sending from server to user must be validated by pydantic.
+Here, we need first to check the structure of the data sended by server not user by pydantic model.
+"""
+
+# We created before Movie_structure before
+from typing import List
+@app.get("/movies_validated", response_model=List[Movie_structure])
+def read_all_moives_validated():
+    return list(movies_db.values())
