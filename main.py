@@ -165,3 +165,25 @@ from typing import List
 @app.get("/movies_validated", response_model=List[Movie_structure])
 def read_all_moives_validated():
     return list(movies_db.values())
+
+
+"""
+Scenario 8: User watns to send data to the server using POST method.
+Here, we want to understand http statis.
+Suppose user wants to add a new movie to his/her list.
+"""
+
+from fastapi import status
+@app.post("/add_fav_books_handle_status", status_code=status.HTTP_201_CREATED)
+def add_fav_books(movie_detail:Movie_structure): # Here the input of user is called movie_detail which must pay attention to calss Movie_Structure for checing inout format
+    
+    # Now we can add this movie to the movies_db
+    # Compute the next numeric id in a safe way (handle empty DB)
+    if movies_db:
+        new_id = max(movies_db.keys()) + 1
+    else:
+        new_id = 1
+
+    # Store the Pydantic model as a plain dict so responses are JSON-serializable
+    movies_db[new_id] = movie_detail.dict()
+    return {'State': "Successful", 'Movies': movies_db}
