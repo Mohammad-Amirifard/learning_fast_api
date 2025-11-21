@@ -1,10 +1,10 @@
-from fastapi import FastAPI
+# This file is called routes.py sicnee it contains all the routes related to movies
+from fastapi import APIRouter
+from src.Movies.moives_data import movies_db
+from src.Movies.schemes import Movie_structure
+movie_router = APIRouter()
 
-app = FastAPI() # Create a FastAPI instance
 
-# Define a root endpoint.
-# We use the @app.get decorator to tell FastAPI that this function
-# should handle Http requests to the "/" path.
 
 """
 Senario 1: User wants to access the root endpoint and get a welcome message.
@@ -12,43 +12,12 @@ Goal: Learning the endpoint creation in FastAPI.
 
 """
 
-@app.get("/")
+@movie_router.get("/")
 def read_root():
     return {"message": "Hi. Welcome to the first lesson for FastAPI"
-    "You are watching the first senario. You are now at root endpoint." }
+    "You are watching the first senario. You are now at root endpoint related to movie route." }
 
 
-"""
-Senario 2: User wants to access his specified endpoint and see some registered detail from past.
-Goal: Learning the path parameters.
-
-"""
-# Create a dictionary to simulate a database of users.
-user_db ={
-    1:{"name": "Alice", "age": 30,'email':"alice@gamil.com"},
-    2:{"name": "Bob", "age": 25, 'email':"bob@gamil.com"},
-    3:{"name": "Charlie", "age": 35, 'email':"charlie@gamil.com"}
-}
-
-# use decorator to define a path parameter.
-@app.get("/users/{user_id}")
-def read_user(user_id:int)-> dict:
-    user_detail =user_db.get(user_id)
-   
-    if not user_detail:
-        return {'msg':"your id is not in our system. Please use the correct one"}
-    
-    name = user_detail['name']
-    age = user_detail['age']
-    email = user_detail['email']
-    return {"msg":(f'Hi {name}. Welcome to this path'
-                        f'You are in the scenario 2 to learn path parameter.'
-                        f'you can see you detail in the following:'
-                        f'Email: {email} and Age:{age}'
-                        )
-                }
-    
-    
 """
 Senario 3: User wants to access an endpoint with query parameters to filter data.
 Here, suppopse we have an endpoint shows all films, but using query parameters, user can filter films by genre and year.
@@ -56,21 +25,13 @@ Goal: Learning the query parameters.
 """
 
 
-movies_db = {
-    1: {"title": "Inception", "genre": "Sci-Fi", "year": 2010},
-    2: {"title": "The Dark Knight", "genre": "Action", "year": 2008},
-    3: {"title": "Interstellar", "genre": "Sci-Fi", "year": 2014},
-    4: {"title": "Pulp Fiction", "genre": "Crime", "year": 1994},
-
-}
-
 # Let's allow user to get all movies.
-@app.get("/movies/")
+@movie_router.get("/movies_list")
 def read_all_moives()->dict:
     return movies_db
 
 #Let's see movies just by an specific genre
-@app.get('/movies/filter1')
+@movie_router.get('/by_genre/')
 def read_moives_by_genre(genre: str="Sci-Fi"):
     movies_by_genre = {}
     for id, dic in movies_db.items():
@@ -81,8 +42,10 @@ def read_moives_by_genre(genre: str="Sci-Fi"):
         return movies_by_genre
     return {"msg":"No matched movies found"}
 
+
+
 #Let's see movies just by an specific genre and specified year
-@app.get('/movies/filter2')
+@movie_router.get('/by_genre_year/')
 def read_movies_by_genre_year(genre:str="Sci-Fi", year: int=2010):
     movies_dic = {}
     for id, dic in movies_db.items():
@@ -93,55 +56,15 @@ def read_movies_by_genre_year(genre:str="Sci-Fi", year: int=2010):
         return movies_dic
     return {"msg":"No matched movies found"}
 
-"""
-Senario 4: User wants to access an endpoint that uses both path and query parameters.
-Suppose we have lots of favorite books stored per each user, now uers wnat to see just a sepcific book from his favorite list.
-"""
-users_fav_books = {
-    1: {1: "1984", 2: "To Kill a Mockingbird", 3: "The Great Gatsby",4:"Gulliver's Travels",5:"Madame Bovary"},
-    2: {1: "Moby", 2: "War and Peace", 3: "Hamlet",4:"The Odyssey",5:"Ulysses"},
-    3: {1: "The Catcher in the Rye", 2: "Brave New World", 3: "The Hobbit",4:"Fahrenheit 451",5:"Jane Eyre"},
-}
-
-@app.get("/favorite_books/{user_id}")
-def read_some_of_fav_books(user_id:int=1,maximum_number:int=5)->dict:
-    if not user_id in users_fav_books.keys():
-        return {"msg":"Sorry, your user id is not in our list"}
-    
-    user_books = list(users_fav_books[user_id].values())[:maximum_number]
-    return {"Your favorite books are: ":user_books}
-    
-
-"""
-Senario 5: Suppose in scenario 4, user forgets to write the maximum number and we don't want to show defulat value to him/her.
-Gaol: Learn Optional module.
-"""
-from typing import Optional
-@app.get("/new_favorite_books/{user_id}")
-def read_some_of_fav_books(user_id:int,maximum_number:Optional[int]=None)->dict:
-    if maximum_number is None:
-        return {"msg": "You didn't enter any maximum_number. We got None for it."}
-    if user_id not in users_fav_books.keys():
-        return {"msg": "Sorry, your user id is not in our list."}
-        
-    user_books = list(users_fav_books[user_id].values())[:maximum_number]
-    return {"Your favorite books are: ": user_books}
 
 """
 Scenario 6: User watns to send data to the server using POST method.
 Here, we need first to check the structure of the data sended by user by pydantic model.
 Suppose user wants to add a new movie to his/her list.
 """
-from pydantic import BaseModel
-
-# First we need to tell what sheme the data sent by user must have
-class Movie_structure(BaseModel):
-    title : str # It says the title given by user must be str
-    genre : str
-    year : int
 
 
-@app.post("/add_fav_books")
+@movie_router.post("/add_fav_books")
 def add_fav_books(movie_detail:Movie_structure): # Here the input of user is called movie_detail which must pay attention to calss Movie_Structure for checing inout format
     
     # Now we can add this movie to the movies_db
@@ -155,6 +78,7 @@ def add_fav_books(movie_detail:Movie_structure): # Here the input of user is cal
     movies_db[new_id] = movie_detail.dict()
     return {'State': "Successful", 'Movies': movies_db}
 
+
 """
 Scenario 7: User watns to see all movies, but these data sending from server to user must be validated by pydantic.
 Here, we need first to check the structure of the data sended by server not user by pydantic model.
@@ -162,7 +86,7 @@ Here, we need first to check the structure of the data sended by server not user
 
 # We created before Movie_structure before
 from typing import List
-@app.get("/movies_validated", response_model=List[Movie_structure])
+@movie_router.get("/movies_list_validated", response_model=List[Movie_structure])
 def read_all_moives_validated():
     return list(movies_db.values())
 
@@ -174,7 +98,7 @@ Suppose user wants to add a new movie to his/her list.
 """
 
 from fastapi import status
-@app.post("/add_fav_books_handle_status", status_code=status.HTTP_201_CREATED)
+@movie_router.post("/add_fav_books_handle_status", status_code=status.HTTP_201_CREATED)
 def add_fav_books(movie_detail:Movie_structure): # Here the input of user is called movie_detail which must pay attention to calss Movie_Structure for checing inout format
     
     # Now we can add this movie to the movies_db
@@ -188,10 +112,11 @@ def add_fav_books(movie_detail:Movie_structure): # Here the input of user is cal
     movies_db[new_id] = movie_detail.dict()
     return {'State': "Successful", 'Movies': movies_db}
 
+
 """
 Scenario 9: Update an existing movie using PUT method.
 """
-@app.put("/update_movie/{movie_id}")
+@movie_router.put("/update_movie/{movie_id}")
 def update_movie(movie_id:int, movie_detail:Movie_structure):
     if movie_id not in movies_db:
         return {"msg":"Movie id not found."}
@@ -202,7 +127,7 @@ def update_movie(movie_id:int, movie_detail:Movie_structure):
 """
 Scenario 10: Delete an existing movie using DELETE method.
 """
-@app.delete("/delete_movie/{movie_id}")
+@movie_router.delete("/delete_movie/{movie_id}")
 def delete_movie(movie_id:int):
     if movie_id not in movies_db:
         return {"msg":"Movie id not found."}
